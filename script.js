@@ -3,6 +3,7 @@ let currentQuestionIndex = 0;
 let score = 0;
 let timeLeft = 30;
 let timer;
+let isQuizStarted = false;
 
 const questions = [
     {
@@ -35,82 +36,47 @@ const questions = [
         },
         correctAnswer: "A"
     },
-    {
-        question: "Can stomata close? Why is this important?",
-        options: {
-            A: "Stomata only close at night for photosynthesis.",
-            B: "Yes, stomata can close, and this is important for conserving water and regulating gas exchange.",
-            C: "Stomata cannot close under any circumstances.",
-            D: "Closing stomata increases water loss."
-        },
-        correctAnswer: "B"
-    },
-    {
-        question: "What do phloem tissues transport?",
-        options: {
-            A: "Sugars and other organic nutrients",
-            B: "Oxygen and nitrogen",
-            C: "Carbon dioxide",
-            D: "Water and minerals"
-        },
-        correctAnswer: "A"
-    },
-    {
-        question: "In which direction does xylem carry water?",
-        options: {
-            A: "Upward, from roots to leaves",
-            B: "Horizontally, between branches",
-            C: "Inward, from the atmosphere to the roots",
-            D: "Downward, from leaves to roots"
-        },
-        correctAnswer: "A"
-    },
-    {
-        question: "How does transpiration benefit a plant?",
-        options: {
-            A: "Transpiration helps plants absorb carbon dioxide for photosynthesis.",
-            B: "Transpiration increases soil nutrient levels directly.",
-            C: "Transpiration benefits a plant by facilitating water and nutrient uptake, cooling the plant, and maintaining turgor pressure.",
-            D: "Transpiration prevents plants from losing water during drought."
-        },
-        correctAnswer: "C"
-    },
-    {
-        question: "What happens to water absorbed by the roots?",
-        options: {
-            A: "Water is only used for photosynthesis.",
-            B: "Water absorbed by the roots is transported through the plant for various functions and may be lost through transpiration.",
-            C: "Water is stored in the roots indefinitely.",
-            D: "Water is converted into glucose immediately."
-        },
-        correctAnswer: "B"
-    },
-    {
-        question: "Why is carbon dioxide important for plants?",
-        options: {
-            A: "Carbon dioxide is harmful to plants and inhibits their growth.",
-            B: "Plants do not require carbon dioxide for photosynthesis.",
-            C: "Carbon dioxide is primarily used by animals for respiration.",
-            D: "Carbon dioxide is important for plants because it is a key ingredient in photosynthesis, enabling them to produce energy and oxygen."
-        },
-        correctAnswer: "D"
-    },
-    {
-        question: "How do phloem and xylem work together in a plant?",
-        options: {
-            A: "Phloem absorbs sunlight while xylem stores carbon dioxide.",
-            B: "Phloem transports nutrients and sugars, while xylem transports water and minerals, working together to support plant growth.",
-            C: "Phloem transports water and minerals, while xylem transports nutrients and sugars.",
-            D: "Phloem and xylem are both responsible for photosynthesis in plants."
-        },
-        correctAnswer: "B"
-    }
+    // Add other questions here...
 ];
 
+// Play start sound when the quiz starts
+function playStartSound() {
+    const startSound = document.getElementById("start-sound");
+    startSound.play();
+}
+
+// Play correct answer sound
+function playCorrectSound() {
+    const correctSound = document.getElementById("correct-sound");
+    correctSound.play();
+}
+
+// Play incorrect answer sound
+function playIncorrectSound() {
+    const incorrectSound = document.getElementById("incorrect-sound");
+    incorrectSound.play();
+}
+
+// Generate particle effects
+function generateParticles() {
+    const particlesContainer = document.getElementById("particles");
+    const particle = document.createElement("div");
+    particle.classList.add("particle");
+    const size = Math.random() * 10 + 5;
+    particle.style.width = size + "px";
+    particle.style.height = size + "px";
+    particle.style.animationDuration = (Math.random() * 0.8 + 0.5) + "s";
+    particlesContainer.appendChild(particle);
+    setTimeout(() => {
+        particlesContainer.removeChild(particle);
+    }, 1000);
+}
+
+// Load the question and answers
 function loadQuestion() {
     if (currentQuestionIndex < questions.length) {
         const currentQuestion = questions[currentQuestionIndex];
-        document.getElementById("question").textContent = currentQuestion.question;
+        document.getElementById("question").textContent = `Question ${currentQuestionIndex + 1}: ${currentQuestion.question}`;
         const options = currentQuestion.options;
         document.querySelectorAll(".answer-btn").forEach((button, index) => {
             const optionKey = Object.keys(options)[index];
@@ -127,6 +93,7 @@ function loadQuestion() {
     }
 }
 
+// Update the timer every second
 function updateTimer() {
     if (timeLeft > 0) {
         timeLeft--;
@@ -137,28 +104,54 @@ function updateTimer() {
     }
 }
 
+// Track the user's answers
+let userAnswers = [];
+
+// Check if the selected answer is correct
 function checkAnswer(answer) {
     const currentQuestion = questions[currentQuestionIndex];
     if (answer === currentQuestion.correctAnswer) {
         score++;
+        playCorrectSound();
+        generateParticles();
+        userAnswers.push({ questionNumber: currentQuestionIndex + 1, answer: "Correct" });
+    } else {
+        playIncorrectSound();
+        userAnswers.push({ questionNumber: currentQuestionIndex + 1, answer: "Incorrect" });
     }
     currentQuestionIndex++;
     loadQuestion();
 }
 
+// Show the final result
 function showResult() {
     document.getElementById("quiz").style.display = "none";
     document.getElementById("result").style.display = "block";
     document.getElementById("final-score").textContent = `Your score: ${score}`;
+    
+    let incorrectQuestionsText = "You got the following questions wrong: <ul>";
+    userAnswers.forEach(answer => {
+        if (answer.answer === "Incorrect") {
+            incorrectQuestionsText += `<li>Question ${answer.questionNumber}</li>`;
+        }
+    });
+    incorrectQuestionsText += "</ul>";
+    document.getElementById("incorrect-questions").innerHTML = incorrectQuestionsText;
 }
 
+// Restart the quiz
 function restartQuiz() {
     currentQuestionIndex = 0;
     score = 0;
+    userAnswers = [];
     document.getElementById("quiz").style.display = "block";
     document.getElementById("result").style.display = "none";
     loadQuestion();
 }
 
 // Start the quiz
-loadQuestion();
+if (!isQuizStarted) {
+    playStartSound();
+    loadQuestion();
+    isQuizStarted = true;
+}
