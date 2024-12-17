@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIK Quizzzes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #quiz {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        #result {
+            display: none;
+            text-align: center;
+        }
+        .answer-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .answer-btn:hover {
+            background-color: #45a049;
+        }
+        #timer {
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="quiz">
+        <div id="timer">30</div>
+        <div id="question"></div>
+        <button class="answer-btn" onclick="checkAnswer('A')"></button>
+        <button class="answer-btn" onclick="checkAnswer('B')"></button>
+        <button class="answer-btn" onclick="checkAnswer('C')"></button>
+        <button class="answer-btn" onclick="checkAnswer('D')"></button>
+    </div>
+
+    <div id="result">
+        <h2>Quiz Over!</h2>
+        <p id="final-score"></p>
+        <button onclick="restartQuiz()">Restart Quiz</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
